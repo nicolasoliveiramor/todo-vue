@@ -1,24 +1,13 @@
 <script setup>
 import { reactive } from 'vue';
-
-// Estado inicial das tarefas e do filtro
+import Cabecalho from './components/Cabecalho.vue';
+import Formulario from './components/Formulario.vue';
+import ListaDeTarefas from './components/ListaDeTarefas.vue';
+{/* Estado inicial das tarefas e do filtro */}
 const estado = reactive({
   filtro: 'todas',
   tarefaTemporaria: '',
-  tarefas: [
-    {
-      titulo: 'Estudar ES6',
-      finalizada: false,
-    },
-    {
-      titulo: 'Estudar SASS',
-      finalizada: false,
-    },
-    {
-      titulo: 'Ir para a academia',
-      finalizada: true,
-    },
-  ]
+  tarefas: []
 })
 
 // Funções para filtrar tarefas
@@ -57,50 +46,11 @@ const cadastraTarefa = () => {
 
 <template>
   <div class="container">
-    <header class="p-5 mb-4 mt-4 bg-light rounded-3">
-      <h1>Minhas tarefas</h1>
-      <p>
-        Você possui {{ getTarefasPendentes().length }} tarefas pendentes
-      </p>
-    </header>
-
-    <!-- Formulário de cadastro de tarefas -->
-    <form @submit.prevent="cadastraTarefa">
-      <div class="row">
-        <div class="col">
-          <input :value="estado.tarefaTemporaria" @change="evento => estado.tarefaTemporaria = evento.target.value" required type="text" placeholder="Digite aqui a descrição da tarefa" class="form-control">
-        </div>
-        <div class="col-md-2">
-          <button type="submit" class="btn btn-primary">Cadastro</button>
-        </div>
-        <div class="col-md-2">
-          <select @change="evento => estado.filtro = evento.target.value" class="form-control">
-            <option value="todas">Todas tarefas</option>
-            <option value="pendentes">Pendentes</option>
-            <option value="finalizadas">Finalizadas</option>
-          </select>
-        </div>
-      </div>
-    </form>
-
-    <!-- Lista de tarefas filtradas -->
-    <ul class="list-group mt-4">
-      <!-- Itera sobre as tarefas filtradas -->
-      <li v-for="tarefa in getTarefasFiltradas()" class="list-group-item">
-        <!-- Checkbox para marcar/desmarcar como finalizada -->
-        <input @change="evento => tarefa.finalizada = evento.target.checked" v-model="tarefa.finalizada" type="checkbox" id="tarefa.titulo">
-        
-        <!-- Label com estilo baseado no estado 'finalizada' -->
-        <label :class="{ done: tarefa.finalizada }" class="ms-3" :for="tarefa.titulo">
-          {{ tarefa.titulo }}
-        </label>
-      </li>
-    </ul>
+    <Cabecalho :tarefas-pendentes="getTarefasPendentes().length" />
+    <Formulario 
+    :trocar-filtro="evento => estado.filtro = evento.target.value" 
+    :tarefa-temporaria="estado.tarefaTemporaria" 
+    :edita-tarefa-temporaria="evento => estado.tarefaTemporaria = evento.target.value" :cadastra-tarefa="cadastraTarefa" />
+    <ListaDeTarefas :tarefas="getTarefasFiltradas()" />
   </div>
 </template>
-
-<style scoped>
-  .done {
-    text-decoration: line-through;
-  }
-</style>
